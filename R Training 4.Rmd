@@ -1,0 +1,90 @@
+---
+title: "R Training 4"
+author: "Martin Chan"
+date: "23 February 2019"
+output: 
+  html_document:
+    toc: true
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+### Introduction - R Training 4
+
+This is the 4th R Training document where the aim is to introduce R with a focus on analysing survey data, or data types commonly found in market or strategy research. The document will cover more advanced topics (*advanced* may sound intimidating - but I guarantee they're highly valuable!) in R, including:
+
+* for loops
+* `apply()` family of functions
+* how to write your own custom functions. 
+
+These tricks and concepts will still be introduced with *practical usage in research * in mind and therefore will focus more on data examples close to what we find in research. However, if you'd like to do a bit of further reading do check out this blogpost available on R-bloggers <https://www.r-bloggers.com/r-tutorial-on-the-apply-family-of-functions/>.
+
+Like in the previous training documents, the R code used here will largely follow the tidyverse / dplyr conventions of using pipe operators (`%>%`). The principle behind this is the cleaner, more readable code that results from using these conventions. Despite the fact they make the code marginally slower (literally by micro-seconds), the bottlenecks in data analysis tends to be in thinking and planning (coding) rather than computation, and hence the trade-off for more readable code is surely justified. 
+
+### 1. Simulating your own dataset
+
+To completely eliminate any possibility of infringeing GDPR or other privacy issues that comes from using a 'real' dataset, we will try to simulate our own datasets for the purpose of this training. The main workhorse functions that we will use to do this are:  
+
+* `sample()`
+* `tibble()` / `data.frame()` (doesn't really matter which one you use - I'd recommend `tibble`) [Read this if you want the details](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html)
+* `rpois()` (I've found most useful for generating age data)
+
+Before you run the following, ensure you start with loading tidyverse with `library(tidyverse)`. The first step is to create some vectors with a consistent size of 5000, which we will use as the columns in our data frame / tibble. With the `sample()` function, the `x` argument specifies what you would like to have as values, and the `prob` argument specifying the probability of occurrence for each of those values (omitting this argument will return an even split). Here is an example created for gender, which I've labelled as `q2_gender`:
+
+```{r gender}
+q2_gender <- sample(x = c("Male","Female","Other"),
+                 size = 5000,
+                 prob = c(.48,.51,.01),
+                 replace = TRUE)
+```
+
+Another useful function for simulating data, particularly for integers, is the `rpois()` function. This generates a Poisson distribution, where `n` specifies the number of random values to return and `lambda` specifies the mean of the distribution (must be non-negative). To get a sense of what you've actually simulated, use the `hist()` function to plot a histogram of the simulated vector; it's also good practice to use `summary()` to review some summary statistics.
+
+As you'll see below, `rpois()` generates a somewhat 'realistic' age distribution that you would expect from an actual dataset:
+```{r age}
+q3_age <- rpois(n = 5000, lambda = 50)
+
+hist(q3_age, labels = TRUE) # Plot histogram, show value labels
+summary(q3_age)
+```
+
+All of these newly simulated vectors can then be specified as columns in a tibble / data frame. Note that you don't need to create the simulations **outside** the `tibble()` function; you can always condense your code making all the simulation calls within `tibble()`. For instance, the `ID` column below is generated directly within the `tibble()` function. In some occasions however, you may choose to explicitly declare the vectors to enhance the readability of the code.
+
+The `sim_data` tibble object created below will have 5000 rows and 3 variables, containing an ID, gender, and an age variable. You can use `glimpse()` or `View()` to explore what you have created. Note that because these variables are randomly generated, you will not get the same dataset everytime you run the same code. (`set.seed()` is a trick to overcome this, which you can read more about [here](http://rfunction.com/archives/62))
+
+```{r}
+sim_data <- tibble(ID = 1:5000,
+                   Q2_GENDER = q2_gender,
+                   Q3_AGE = q3_age)
+```
+
+Now, let us use the following code to simulate a dataset that represents the consumption of snacks over the three snacking occasions of "pre-lunch" (**PRELUN**), "post-lunch" (**POSLUN**), and "late-afternoon" (**LATAFT**). To make the data slightly more interesting, the probabilities of some variables are pre-specified. The survey question capturing these consumption variables can be:
+
+> Please select all of the following snack types that you have consumed around [INSERT INTERVAL] in the past week.
+
+Note that all the brand consumption variables generated below are in the form of binary variables taking on only the values of 0 and 1, where 0 is assumed to be 'Not Selected' and 1 is assumed to be 'Selected'. The snack types 1, 2, and 3 represent Jaffa cakes, Rich Tea biscuits, and 'Posh chocolates' respectively. 
+
+```{r}
+snack_data <- tibble(ID = 1:5000,
+                     Q2_GENDER = q2_gender,
+                     Q3_AGE = q3_age,
+                     PRELUN_1 = sample(x = c(0,1), 5000, replace = TRUE, prob = c(.45, .55)), # Jaffa
+                     PRELUN_2 = sample(x = c(0,1), 5000, replace = TRUE, prob = c(.65, .35)), # Tea Biscuits
+                     PRELUN_3 = sample(x = c(0,1), 5000, replace = TRUE), # Posh chocs
+                     
+                     POSLUN_1 = sample(x = c(0,1), 5000, replace = TRUE), # Jaffa
+                     POSLUN_2 = sample(x = c(0,1), 5000, replace = TRUE), # Tea Biscuits
+                     POSLUN_3 = sample(x = c(0,1), 5000, replace = TRUE, prob = c(.45, .55)), # Posh chocs
+                     
+                     LATAFT_1 = sample(x = c(0,1), 5000, replace = TRUE), # Jaffa
+                     LATAFT_2 = sample(x = c(0,1), 5000, replace = TRUE, prob = c(.90, .10)), # Tea Biscuits
+                     LATAFT_3 = sample(x = c(0,1), 5000, replace = TRUE)) # Posh chocs
+```
+
+Having simulated a suitable dataset, we can look at how for loops and `apply()` functions can come into use.
+
+
