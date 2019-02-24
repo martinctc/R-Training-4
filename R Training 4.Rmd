@@ -3,10 +3,10 @@ title: "R Training 4"
 author: "Martin Chan"
 date: "23 February 2019"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     theme: united
-    toc: yes
-  pdf_document:
     toc: yes
 ---
 
@@ -201,10 +201,123 @@ brandcon_list
 
 After the outputs have been assigned to a list, each individual member of a list can be called by referencing the index in square brackets, for instance `brandcon_list[[2]]`. A list is perhaps the most suitable object for storing these outputs, not only because this would avoid cluttering up your environment by explicitly declaring the outputs as objects, but also because data frames in lists can be quite handily exported as Excel sheets in a single Workbook using the `write_xlsx()` in the `writexl` package (see [here](https://github.com/ropensci/writexl))
 
+Below is a sample of the same for-loop used in iterative plotting. Try copying and running this and see what you can figure out what the code does! (don't worry if you don't understand the ggplot syntax at this point)
+
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+
+names(big_snack_data) %>%
+  .[str_detect(.,"_[:digit:]")] %>%
+  str_remove("[:digit:]{1,2}") %>%
+  unique() -> vars_string2
+
+plot_list <- list()
+
+for(i in 1:length(vars_string2)){
+  big_snack_data %>%
+    mutate(Q3_AGEBAND=ifelse(Q3_AGE >= 35, "35+", "Below 35")) %>%
+    group_by(Q3_AGEBAND) %>%
+    summarise_at(vars(num_range(vars_string2[[i]],1:10)),~sum(.) / n()) %>%
+    gather(occasion,age, -Q3_AGEBAND) %>%
+    
+    # ggplot2 'layer-graphics' syntax
+    ggplot(aes(x = reorder(occasion,age), y = age, fill = Q3_AGEBAND)) + 
+    geom_col() +
+    geom_text(aes(y = age, label = round(age * 100)), hjust = -0.5) +
+    coord_flip() +
+    facet_wrap(~Q3_AGEBAND) -> plot_list[[i]]
+}
+
+plot_list
+
+```
+
 ### 3. apply() family of functions
 
 Although for-loops are generally easy to read and are fairly intuitive, R possesses some special tools for iterative repetition which allow largely similar operations to be performed more efficiently due to its vectorisation features ( [If you're curious, read more here](http://www.noamross.net/blog/2014/4/16/vectorization-in-r--why.html)). The standard example of such a 'tool' is the `apply()` function, but since there are multiple variations of this (e.g. `lapply()`,`sapply()`,`mapply()`) with the main difference being the type of output they return, these functions are often referred to as the "apply() family" in the literature (e.g. for instance, see [here](https://www.dummies.com/programming/r/how-to-use-the-apply-family-of-functions-in-r/)).
 
-The function that aligns most well with we are attempting to achieve in our example (i.e. summarise some data by group, then iterate through sets of variables, then return the outputs in a list)
+The function that aligns most well with we are attempting to achieve in our example (i.e. summarise some data by group, then iterate through sets of variables, then return the outputs in a list) is `lapply()`. In essence, `lapply()` allows you to iterate some process (e.g. analysis, pasting text) and return the outputs in a list.`lapply()` has two main arguments:
+
+* x: a vector or a list to iterate through. 
+* FUN: the function which you want x to pass as the argument.
+
+Unlike the for-loop example in the previous section, the "process" to iterate is expressed by a function, which is labelled as "some_function" below. This function here takes `x` as the argument, calculates its square, and then returns a sentence that tells you the result of the calculation. What `lapply()` does here is essentially to apply the custom-defined function to "some_numbers":
+
+```{r}
+
+some_numbers <- c(57,89,40,16)
+
+some_function <- function(x){
+  square_x <- x^2 # Square x
+  paste(square_x,"is the square of",x)
+}
+
+lapply(some_numbers,some_function)
+ 
+```
+
+You may also try to run `lapply(1:10,sqrt)`, which applies the base R square root function (`sqrt()`) to the numbers 1 to 10. How many members of that list have a value that is greater than 2.5? (Answers below)
+
+To fully take advantage of the power of `lapply()`, you will need to learn how to write your own functions. Put simply, a function is something takes an input (the "argument(s)") and converts it into an output (there are exceptions, but most functions have inputs and outputs). You will already know many R functions at this point, such as `mean()`, `sum()`,`sqrt()`, `nchar()`. 
+
+Creating your own function is simple. You will first need to give it a name, decide what you want as inputs and what you want it to do and return as outputs. Here's one that lets you input "some_word" as an argument, calculates the total number of characters in that word using the function `nchar()`, and returns a string of text. 
+
+```{r}
+count_characters <- function(some_word){
+ total_char <- nchar(some_word)
+ paste(some_word, "has", total_char,"characters.")
+}
+
+# count_characters("schadenfreude")
+# [1] "schadenfreude has 13 characters."
+```
+
+
+Here's a silly one - no arguments are taken, but if you run `quick_maths()` it prints a succession of statements to the console, whilst pausing one second between each statement. This isn't really useful in real life, but gives you a sense of how a function works. 
+```{r}
+
+quick_maths <- function(){
+  print("two plus two is four")
+  Sys.sleep(1)
+  print("minus one that's three")
+  Sys.sleep(1)
+  print("QUICK MATHS")
+}
+
+## RUN THIS:
+quick_maths()
+
+```
+
+A function can also take in multiple arguments. Here are two examples, one calculating index and the other calculating CAGR (Compound Annual Growth Rate):
+
+```{r}
+
+index_it <- function(x, total){
+  return(x / total * 100)
+}
+
+# index_it(.87,.43)
+# [1] 202.3256
+
+
+calculate_CAGR <- function(end_value, start_value, periods){
+  
+  step_1 <- end_value / start_value
+  step_2 <- step_1 ^ (1 / periods)
+  step_3 <- step_2 - 1
+  return(step_3)
+}
+
+# calculate_CAGR(end_value = 5000,
+#                start_value = 3200,
+#                periods = 3)
+# [1] 0.1603972
+```
+
+
+
+
+### Answers
+1. `sum(lapply(1:10,sqrt) > 2.5)` tells you how many members in the `lapply()` result is larger than 2.5.
 
 
