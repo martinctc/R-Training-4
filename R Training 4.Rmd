@@ -17,6 +17,7 @@ library(tidyverse)
 
 This is the 4th R Training document where the aim is to introduce R with a focus on analysing survey data, or data types commonly found in market or strategy research. The document will cover more advanced topics (*advanced* may sound intimidating - but I guarantee they're highly valuable!) in R, including:
 
+* simulating your own data
 * for loops
 * `apply()` family of functions
 * how to write your own custom functions. 
@@ -32,6 +33,7 @@ To completely eliminate any possibility of infringeing GDPR or other privacy iss
 * `sample()`
 * `tibble()` / `data.frame()` (doesn't really matter which one you use - I'd recommend `tibble`) [Read this if you want the details](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html)
 * `rpois()` (I've found most useful for generating age data)
+* `matrix()` - useful for generating a large number of random binary variables
 
 Before you run the following, ensure you start with loading tidyverse with `library(tidyverse)`. The first step is to create some vectors with a consistent size of 5000, which we will use as the columns in our data frame / tibble. With the `sample()` function, the `x` argument specifies what you would like to have as values, and the `prob` argument specifying the probability of occurrence for each of those values (omitting this argument will return an even split). Here is an example created for gender, which I've labelled as `q2_gender`:
 
@@ -66,9 +68,10 @@ Now, let us use the following code to simulate a dataset that represents the con
 
 > Please select all of the following snack types that you have consumed around [INSERT INTERVAL] in the past week.
 
-Note that all the brand consumption variables generated below are in the form of binary variables taking on only the values of 0 and 1, where 0 is assumed to be 'Not Selected' and 1 is assumed to be 'Selected'. The snack types 1, 2, and 3 represent Jaffa cakes, Rich Tea biscuits, and 'Posh chocolates' respectively. 
+Note that all the brand consumption variables generated below are in the form of binary variables taking on only the values of 0 and 1, where 0 is assumed to be 'Not Selected' and 1 is assumed to be 'Selected'. Imagine that the snack types 1, 2, and 3 represent Jaffa cakes, Rich Tea biscuits, and 'Posh chocolates' respectively. 
 
 ```{r snack_data}
+
 snack_data <- tibble(ID = 1:5000,
                      Q2_GENDER = q2_gender,
                      Q3_AGE = q3_age,
@@ -120,22 +123,60 @@ As the above demonstrates, for-loops make it very easy to run operations that ne
 
 This can be applied to data analysis operations. 
 
+Imagine if you wished to create a gender-split table three times, once for each snack occasion type; you'd have to repeat the code three times: 
+
 ```{r}
-snack_data %>%
+big_snack_data %>%
   group_by(Q2_GENDER) %>%
-  summarise_at(vars(num_range("PRELUN_", 1:3)), ~sum(.)/length(.)) # can also use funs() form, depending on dplyr version
+  summarise_at(vars(num_range("PRELUN_", 1:10)), ~sum(.)/length(.)) # can also use funs() form, depending on dplyr version
 
-snack_data %>%
+big_snack_data %>%
   group_by(Q2_GENDER) %>%
-  summarise_at(vars(num_range("POSLUN_", 1:3)), ~sum(.)/length(.))
+  summarise_at(vars(num_range("POSLUN_", 1:10)), ~sum(.)/length(.))
 
-snack_data %>%
+big_snack_data %>%
   group_by(Q2_GENDER) %>%
-  summarise_at(vars(num_range("LATAFT_", 1:3)), ~sum(.)/length(.))
+  summarise_at(vars(num_range("LATAFT_", 1:10)), ~sum(.)/length(.))
 ```
 
+The example below shows how the identical output can be replicated using a for-loop. The iteration is done through each member of the `vars_string` vector, which has been created to contain the variable headers for each snack-time occasion. `summarise_at()` allows you to summarise all the 10 brand variables for each snack-time occasion at the same time, so effectively the loop only iterates 3 times for 30 columns of data. 
 
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 
+vars_string <- c("PRELUN_","POSLUN_","LATAFT_") # Variable characters to iterate
+
+for(occ_type in vars_string){
+  big_snack_data %>%
+    group_by(Q2_GENDER) %>%
+    summarise_at(vars(num_range(occ_type, 1:10)), ~sum(.)/length(.)) %>%
+    print()
+}
+```
+
+As you can see, code using for-loops are more succinct, elegant, and allows less room for human error, such as forgetting to change all the code chunks when changing the grouping variable. In order to make the above code practical, we will also need to find a way to assign the outputs to something that we can manipulate, instead of just printing them out in the console. An easy way to do this is to initialise an empty list object, and then assign each output as the n-th member of the list. 
+
+In the example below, an alternative way of iteration is used, where the iteration is run through the numbers 1 to 3, as opposed to each member in the `vars_string` vector. The benefit of iterating this way is to make it easier to assign the outputs to their corresponding 'slots' in the list.
+
+```{r}
+vars_string <- c("PRELUN_","POSLUN_","LATAFT_") # Variable characters to iterate
+
+brandcon_list <- list() # Initialise empty list
+
+for(i in 1:length(vars_string)){ # length(vars_string) is 3 in this case
+  big_snack_data %>%
+    group_by(Q2_GENDER) %>%
+    summarise_at(vars(num_range(vars_string[[i]], 1:10)), ~sum(.)/length(.)) %>%
+    data.frame() -> brandcon_list[[i]]
+}
+
+brandcon_list
+
+```
+
+After the outputs have been assigned to a list, each individual member of a list can be called by referencing the index in square brackets, for instance `brandcon_list[[2]]`.
 
 ### 3. apply() family of functions
+
+Although for-loops are generally easy to read and are fairly intuitive, R possesses some special tools for iterative repetition due to its vectorisation features ( [If you're curious, read more here](http://www.noamross.net/blog/2014/4/16/vectorization-in-r--why.html)).
+
 
