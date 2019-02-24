@@ -3,10 +3,10 @@ title: "R Training 4"
 author: "Martin Chan"
 date: "23 February 2019"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     theme: united
+    toc: yes
+  pdf_document:
     toc: yes
 ---
 
@@ -27,6 +27,8 @@ This is the training notes for 4th Rainmakers R Training session, where the aim 
 These tricks and concepts will still be introduced with *practical usage in research * in mind and therefore will focus more on data examples close to what we find in research. However, if you'd like to do a bit of further reading do check out this blogpost available on R-bloggers <https://www.r-bloggers.com/r-tutorial-on-the-apply-family-of-functions/>.
 
 Like in the previous training documents, the R code used here will largely follow the tidyverse / dplyr conventions of using pipe operators (`%>%`). The principle behind this is the cleaner, more readable code that results from using these conventions. Despite the fact they make the code marginally slower (literally by micro-seconds), the bottlenecks in data analysis tends to be in thinking and planning (coding) rather than computation, and hence the trade-off for more readable code is surely justified. 
+
+---
 
 ### 1. Simulating your own dataset
 
@@ -115,6 +117,8 @@ glimpse(big_snack_data[,1:15]) # Glimpse first 15 columns only
 ```
 
 Having simulated a suitable dataset that has a fair resemblance to U&A data, we can look at how for loops and `apply()` functions can come into use.
+
+---
 
 ### 2. For-loops
 
@@ -231,6 +235,8 @@ plot_list
 
 ```
 
+---
+
 ### 3. apply() family of functions
 
 Although for-loops are generally easy to read and are fairly intuitive, R possesses some special tools for iterative repetition which allow largely similar operations to be performed more efficiently due to its vectorisation features ( [If you're curious, read more here](http://www.noamross.net/blog/2014/4/16/vectorization-in-r--why.html)). The standard example of such a 'tool' is the `apply()` function, but since there are multiple variations of this (e.g. `lapply()`,`sapply()`,`mapply()`) with the main difference being the type of output they return, these functions are often referred to as the "apply() family" in the literature (e.g. for instance, see [here](https://www.dummies.com/programming/r/how-to-use-the-apply-family-of-functions-in-r/)).
@@ -314,6 +320,21 @@ calculate_CAGR <- function(end_value, start_value, periods){
 # [1] 0.1603972
 ```
 
+If you recall our original problem, the intent was to use `lapply()` and custom functions to iterate "analysis repetitions". In effect, what you want to achieve is to use the custom function to specify the analysis that you would like to perform, and use `lapply()` to iterate. For example:
+```{r include=FALSE}
+
+vars_string <- c("PRELUN_","POSLUN_","LATAFT_") # Variable characters to iterate
+
+brand_analysis <- function(brand){
+    big_snack_data %>%
+      group_by(Q2_GENDER) %>%
+      summarise_at(vars(num_range(brand, 1:10)), ~sum(.)/length(.))
+}
+
+
+lapply(vars_string, brand_analysis)
+
+```
 
 
 
