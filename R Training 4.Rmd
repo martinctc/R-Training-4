@@ -74,6 +74,13 @@ Now, let us use the following code to simulate a dataset that represents the con
 
 Note that all the brand consumption variables generated below are in the form of binary variables taking on only the values of 0 and 1, where 0 is assumed to be 'Not Selected' and 1 is assumed to be 'Selected'. Imagine that the snack types 1, 2, and 3 represent Jaffa cakes, Rich Tea biscuits, and 'Posh chocolates' respectively. 
 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.width="200px", paged.print=FALSE}
+knitr::include_graphics("images/posh-chocolate.jpg")
+```
+
+
+
 ```{r snack_data}
 
 snack_data <- tibble(ID = 1:5000,
@@ -207,7 +214,7 @@ After the outputs have been assigned to a list, each individual member of a list
 
 Below is a sample of the same for-loop used in iterative plotting. Try copying and running this and see what you can figure out what the code does! (don't worry if you don't understand the ggplot syntax at this point)
 
-```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 
 names(big_snack_data) %>%
   .[str_detect(.,"_[:digit:]")] %>%
@@ -262,6 +269,10 @@ lapply(some_numbers,some_function)
 ```
 
 You may also try to run `lapply(1:10,sqrt)`, which applies the base R square root function (`sqrt()`) to the numbers 1 to 10. How many members of that list have a value that is greater than 2.5? (Answers below)
+
+---
+
+### 4. Writing custom functions
 
 To fully take advantage of the power of `lapply()`, you will need to learn how to write your own functions. Put simply, a function is something takes an input (the "argument(s)") and converts it into an output (there are exceptions, but most functions have inputs and outputs). You will already know many R functions at this point, such as `mean()`, `sum()`,`sqrt()`, `nchar()`. 
 
@@ -320,6 +331,10 @@ calculate_CAGR <- function(end_value, start_value, periods){
 # [1] 0.1603972
 ```
 
+---
+
+### 5. Bringing together `lapply()` and custom functions
+
 If you recall our original problem, the intent was to use `lapply()` and custom functions to iterate "analysis repetitions". In effect, what you want to achieve is to use the custom function to specify the analysis that you would like to perform, and use `lapply()` to iterate. For example:
 ```{r include=FALSE}
 
@@ -335,6 +350,59 @@ brand_analysis <- function(brand){
 lapply(vars_string, brand_analysis)
 
 ```
+
+Compare this with the for-loop method used above. Some of the advantages are:
+
+* No need to initialise a list; `lapply()` always returns a list. 
+* It is easier to iterate through a character vector even if you want to return the outputs in a list.
+* It's faster - although you would not notice any difference in this particular example, the difference will be obvious if larger datasets are involved, or if the calculations are more complex.
+
+A more complex example where using loops or `lapply()` is unavoidable is shown below. Here, the objective is to create 10 columns, each of which sum up the number of times a particular brand (brand represented by the "_1", "_2", etc. in the variable) across the three snack occasion types. For instance, one column would represent the number of occasions in which a respondent has consumed a "posh chocolate", with possible values ranging from 0 to 3. 
+
+There is a need to iterate 10 times - once for each brand that is represented in the data. As you try to figure out what the code does, here's a guide on some features of the code:
+* `!!sym()` is a wrapper that allows character inputs into the function to be used as names within the function. When used in this functional programming context, `:=` is used instead of the normal `=`when specifying the name of the new column.
+* `apply()` does a similar thing to `lapply()`, but allows you to specify in the `MARGIN` argument whether you want to apply the function by row or by column. MARGIN = 1 will apply by row, whereas MARGIN = 2 will apply by column. This is used in the code below so that the column sums across.
+* `transmute()` is a variation of `mutate()` where only the new column is returned.
+* `bind_cols()` takes data frames in a list and then bind them together by columns. Its "row" counterpart is `bind_rows()`.
+
+
+```{r}
+
+create_sum_columns <- function(i){
+  it <- paste0("_",i)
+  col_name <- paste0("SUM",it)
+  
+  big_snack_data %>%
+  select(ends_with(it)) %>%
+  transmute(!!sym(col_name):=apply(.,MARGIN = 1,sum)) # transmute() is similar to mutate(), but only returns the new column
+}
+
+lapply(1:10, create_sum_columns) %>%
+  bind_cols() %>%
+  glimpse()
+
+```
+
+
+You should now be ready to write some of your own for-loops or functions! There are a few other things to bear in mind:
+
+1. In many cases where it may *seem* like a loop or `lapply()` is necessary, check first. For instance, if you are trying to profile some mutually-exclusive segments (stored in a single categorical variable), you should use `group_by()` rather than looping through `filter()`. When you want to perform the same `summarise()` action on a number of variables, it's useful to consider whether `summarise_at()` can solve your problem. For instance, one non-loop workaround for one of the earlier examples is as follows - which achieves the same effect without using a for-loop or `lapply()`, but is not scalable when there are 10 or even 20 types of snacking occasions.
+
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+big_snack_data %>%
+  group_by(Q2_GENDER) %>%
+  summarise_at(vars(starts_with("PRELUN_"),
+                    starts_with("POSLUN_"),
+                    starts_with("LATAFT_")),
+               ~sum(.)/n()) -> summary_table_with_everything
+
+summary_table_with_everything %>% select(Q2_GENDER,contains("PRELUN"))
+summary_table_with_everything %>% select(Q2_GENDER,contains("POSLUN"))
+summary_table_with_everything %>% select(Q2_GENDER,contains("LATAFT"))
+  
+```
+
+
 
 
 
