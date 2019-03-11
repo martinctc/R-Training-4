@@ -9,7 +9,7 @@ output:
     keep_md: true
   pdf_document:
     toc: yes
-  
+    
 ---
 
 
@@ -66,7 +66,7 @@ summary(q3_age)
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   24.00   45.00   50.00   50.01   55.00   79.00
+##   27.00   45.00   50.00   50.03   55.00   80.00
 ```
 
 All of these newly simulated vectors can then be specified as columns in a tibble / data frame. Note that you don't need to create the simulations **outside** the `tibble()` function; you can always condense your code making all the simulation calls within `tibble()`. For instance, the `ID` column below is generated directly within the `tibble()` function. In some occasions however, you may choose to explicitly declare the vectors to enhance the readability of the code.
@@ -85,6 +85,11 @@ Now, let us use the following code to simulate a dataset that represents the con
 > Please select all of the following snack types that you have consumed around [INSERT INTERVAL] in the past week.
 
 Note that all the brand consumption variables generated below are in the form of binary variables taking on only the values of 0 and 1, where 0 is assumed to be 'Not Selected' and 1 is assumed to be 'Selected'. Imagine that the snack types 1, 2, and 3 represent Jaffa cakes, Rich Tea biscuits, and 'Posh chocolates' respectively. 
+
+
+<img src="images/posh-chocolate.jpg" width="200px" />
+
+
 
 
 ```r
@@ -133,20 +138,20 @@ glimpse(big_snack_data[,1:15]) # Glimpse first 15 columns only
 ## Observations: 5,000
 ## Variables: 15
 ## $ ID        <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1...
-## $ Q2_GENDER <chr> "Male", "Male", "Male", "Male", "Female", "Male", "F...
-## $ Q3_AGE    <int> 49, 57, 45, 44, 51, 41, 51, 54, 58, 55, 46, 46, 46, ...
-## $ PRELUN_1  <dbl> 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1...
-## $ PRELUN_2  <dbl> 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0...
-## $ PRELUN_3  <dbl> 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1...
-## $ PRELUN_4  <dbl> 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1...
-## $ PRELUN_5  <dbl> 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0...
-## $ PRELUN_6  <dbl> 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1...
-## $ PRELUN_7  <dbl> 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0...
-## $ PRELUN_8  <dbl> 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1...
-## $ PRELUN_9  <dbl> 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0...
-## $ PRELUN_10 <dbl> 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1...
-## $ POSLUN_1  <dbl> 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1...
-## $ POSLUN_2  <dbl> 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0...
+## $ Q2_GENDER <chr> "Male", "Male", "Male", "Female", "Female", "Male", ...
+## $ Q3_AGE    <int> 52, 59, 38, 33, 57, 55, 49, 51, 45, 44, 48, 55, 42, ...
+## $ PRELUN_1  <dbl> 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1...
+## $ PRELUN_2  <dbl> 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1...
+## $ PRELUN_3  <dbl> 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0...
+## $ PRELUN_4  <dbl> 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0...
+## $ PRELUN_5  <dbl> 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1...
+## $ PRELUN_6  <dbl> 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0...
+## $ PRELUN_7  <dbl> 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1...
+## $ PRELUN_8  <dbl> 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0...
+## $ PRELUN_9  <dbl> 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0...
+## $ PRELUN_10 <dbl> 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0...
+## $ POSLUN_1  <dbl> 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1...
+## $ POSLUN_2  <dbl> 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1...
 ```
 
 Having simulated a suitable dataset that has a fair resemblance to U&A data, we can look at how for loops and `apply()` functions can come into use.
@@ -218,9 +223,9 @@ big_snack_data %>%
 ## # A tibble: 3 x 11
 ##   Q2_GENDER PRELUN_1 PRELUN_2 PRELUN_3 PRELUN_4 PRELUN_5 PRELUN_6 PRELUN_7
 ##   <chr>        <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>
-## 1 Female       0.490    0.486    0.520    0.497    0.506    0.512    0.502
-## 2 Male         0.508    0.509    0.491    0.508    0.503    0.505    0.494
-## 3 Other        0.55     0.5      0.467    0.467    0.417    0.533    0.667
+## 1 Female       0.500    0.499    0.514    0.496    0.494    0.502    0.493
+## 2 Male         0.501    0.498    0.514    0.506    0.506    0.499    0.485
+## 3 Other        0.469    0.449    0.408    0.388    0.531    0.551    0.469
 ## # ... with 3 more variables: PRELUN_8 <dbl>, PRELUN_9 <dbl>,
 ## #   PRELUN_10 <dbl>
 ```
@@ -235,9 +240,9 @@ big_snack_data %>%
 ## # A tibble: 3 x 11
 ##   Q2_GENDER POSLUN_1 POSLUN_2 POSLUN_3 POSLUN_4 POSLUN_5 POSLUN_6 POSLUN_7
 ##   <chr>        <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>
-## 1 Female       0.506    0.501    0.486    0.482    0.499    0.494    0.507
-## 2 Male         0.502    0.496    0.491    0.499    0.508    0.485    0.510
-## 3 Other        0.433    0.383    0.467    0.417    0.483    0.583    0.417
+## 1 Female       0.505    0.505    0.502    0.507    0.514    0.487    0.503
+## 2 Male         0.504    0.507    0.515    0.477    0.502    0.528    0.506
+## 3 Other        0.408    0.469    0.592    0.469    0.633    0.490    0.510
 ## # ... with 3 more variables: POSLUN_8 <dbl>, POSLUN_9 <dbl>,
 ## #   POSLUN_10 <dbl>
 ```
@@ -252,9 +257,9 @@ big_snack_data %>%
 ## # A tibble: 3 x 11
 ##   Q2_GENDER LATAFT_1 LATAFT_2 LATAFT_3 LATAFT_4 LATAFT_5 LATAFT_6 LATAFT_7
 ##   <chr>        <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>
-## 1 Female       0.499    0.502    0.502    0.505    0.496    0.489    0.485
-## 2 Male         0.496    0.494    0.478    0.497    0.508    0.486    0.493
-## 3 Other        0.533    0.533    0.467    0.6      0.517    0.6      0.483
+## 1 Female       0.497    0.495    0.505    0.501    0.501    0.492    0.507
+## 2 Male         0.505    0.495    0.502    0.495    0.491    0.475    0.523
+## 3 Other        0.551    0.490    0.490    0.551    0.388    0.408    0.531
 ## # ... with 3 more variables: LATAFT_8 <dbl>, LATAFT_9 <dbl>,
 ## #   LATAFT_10 <dbl>
 ```
@@ -286,33 +291,33 @@ brandcon_list
 ```
 ## [[1]]
 ##   Q2_GENDER  PRELUN_1  PRELUN_2  PRELUN_3  PRELUN_4  PRELUN_5  PRELUN_6
-## 1    Female 0.4904230 0.4864326 0.5199521 0.4968077 0.5055866 0.5115722
-## 2      Male 0.5078061 0.5094495 0.4909614 0.5078061 0.5032868 0.5045193
-## 3     Other 0.5500000 0.5000000 0.4666667 0.4666667 0.4166667 0.5333333
+## 1    Female 0.5001979 0.4986150 0.5140483 0.4962406 0.4942620 0.5021765
+## 2      Male 0.5008251 0.4975248 0.5140264 0.5061881 0.5061881 0.4991749
+## 3     Other 0.4693878 0.4489796 0.4081633 0.3877551 0.5306122 0.5510204
 ##    PRELUN_7  PRELUN_8  PRELUN_9 PRELUN_10
-## 1 0.5019952 0.5019952 0.5031923 0.4924182
-## 2 0.4938373 0.5225965 0.4963024 0.5098603
-## 3 0.6666667 0.3166667 0.5333333 0.3833333
+## 1 0.4930748 0.4827859 0.4895133 0.5096953
+## 2 0.4851485 0.5037129 0.5024752 0.5024752
+## 3 0.4693878 0.4081633 0.4489796 0.4489796
 ## 
 ## [[2]]
 ##   Q2_GENDER  POSLUN_1  POSLUN_2  POSLUN_3  POSLUN_4  POSLUN_5  POSLUN_6
-## 1    Female 0.5055866 0.5007981 0.4860335 0.4824421 0.4988029 0.4944134
-## 2      Male 0.5024651 0.4963024 0.4905505 0.4987675 0.5082169 0.4852095
-## 3     Other 0.4333333 0.3833333 0.4666667 0.4166667 0.4833333 0.5833333
+## 1    Female 0.5049466 0.5049466 0.5021765 0.5065295 0.5140483 0.4871389
+## 2      Male 0.5037129 0.5070132 0.5148515 0.4768977 0.5020627 0.5284653
+## 3     Other 0.4081633 0.4693878 0.5918367 0.4693878 0.6326531 0.4897959
 ##    POSLUN_7  POSLUN_8  POSLUN_9 POSLUN_10
-## 1 0.5067837 0.4932163 0.4980048  0.518755
-## 2 0.5102712 0.4856204 0.4893180  0.505341
-## 3 0.4166667 0.6000000 0.4333333  0.450000
+## 1 0.5025722 0.4867432 0.5009893 0.4887218
+## 2 0.5057756 0.4954620 0.5033003 0.5107261
+## 3 0.5102041 0.7142857 0.4489796 0.5918367
 ## 
 ## [[3]]
 ##   Q2_GENDER  LATAFT_1  LATAFT_2  LATAFT_3  LATAFT_4  LATAFT_5  LATAFT_6
-## 1    Female 0.4988029 0.5023943 0.5015962 0.5051875 0.4964086 0.4892259
-## 2      Male 0.4963024 0.4942482 0.4778143 0.4971241 0.5082169 0.4856204
-## 3     Other 0.5333333 0.5333333 0.4666667 0.6000000 0.5166667 0.6000000
+## 1    Female 0.4970321 0.4954491 0.5045509 0.5009893 0.5005936 0.4918876
+## 2      Male 0.5045380 0.4950495 0.5020627 0.4950495 0.4905116 0.4752475
+## 3     Other 0.5510204 0.4897959 0.4897959 0.5510204 0.3877551 0.4081633
 ##    LATAFT_7  LATAFT_8  LATAFT_9 LATAFT_10
-## 1 0.4852354 0.5000000 0.4964086 0.5047885
-## 2 0.4926048 0.5082169 0.4987675 0.4921939
-## 3 0.4833333 0.4333333 0.4666667 0.5333333
+## 1 0.5073209 0.5045509 0.5112782 0.5009893
+## 2 0.5226898 0.5033003 0.4966997 0.5268152
+## 3 0.5306122 0.5918367 0.5918367 0.5510204
 ```
 
 After the outputs have been assigned to a list, each individual member of a list can be called by referencing the index in square brackets, for instance `brandcon_list[[2]]`. A list is perhaps the most suitable object for storing these outputs, not only because this would avoid cluttering up your environment by explicitly declaring the outputs as objects, but also because data frames in lists can be quite handily exported as Excel sheets in a single Workbook using the `write_xlsx()` in the `writexl` package (see [here](https://github.com/ropensci/writexl))
@@ -320,6 +325,51 @@ After the outputs have been assigned to a list, each individual member of a list
 Below is a sample of the same for-loop used in iterative plotting. Try copying and running this and see what you can figure out what the code does! (don't worry if you don't understand the ggplot syntax at this point)
 
 
+```r
+names(big_snack_data) %>%
+  .[str_detect(.,"_[:digit:]")] %>%
+  str_remove("[:digit:]{1,2}") %>%
+  unique() -> vars_string2
+
+plot_list <- list()
+
+for(i in 1:length(vars_string2)){
+  big_snack_data %>%
+    mutate(Q3_AGEBAND=ifelse(Q3_AGE >= 35, "35+", "Below 35")) %>%
+    group_by(Q3_AGEBAND) %>%
+    summarise_at(vars(num_range(vars_string2[[i]],1:10)),~sum(.) / n()) %>%
+    gather(occasion,age, -Q3_AGEBAND) %>%
+    
+    # ggplot2 'layer-graphics' syntax
+    ggplot(aes(x = reorder(occasion,age), y = age, fill = Q3_AGEBAND)) + 
+    geom_col() +
+    geom_text(aes(y = age, label = round(age * 100)), hjust = -0.5) +
+    coord_flip() +
+    facet_wrap(~Q3_AGEBAND) -> plot_list[[i]]
+}
+
+plot_list
+```
+
+```
+## [[1]]
+```
+
+![](R_Training_4_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+```
+## 
+## [[2]]
+```
+
+![](R_Training_4_files/figure-html/unnamed-chunk-8-2.png)<!-- -->
+
+```
+## 
+## [[3]]
+```
+
+![](R_Training_4_files/figure-html/unnamed-chunk-8-3.png)<!-- -->
 
 ---
 
@@ -361,6 +411,10 @@ lapply(some_numbers,some_function)
 ```
 
 You may also try to run `lapply(1:10,sqrt)`, which applies the base R square root function (`sqrt()`) to the numbers 1 to 10. How many members of that list have a value that is greater than 2.5? (Answers below)
+
+---
+
+### 4. Writing custom functions
 
 To fully take advantage of the power of `lapply()`, you will need to learn how to write your own functions. Put simply, a function is something takes an input (the "argument(s)") and converts it into an output (there are exceptions, but most functions have inputs and outputs). You will already know many R functions at this point, such as `mean()`, `sum()`,`sqrt()`, `nchar()`. 
 
@@ -425,7 +479,66 @@ calculate_CAGR <- function(end_value, start_value, periods){
 # [1] 0.1603972
 ```
 
+---
+
+### 5. Bringing together `lapply()` and custom functions
+
 If you recall our original problem, the intent was to use `lapply()` and custom functions to iterate "analysis repetitions". In effect, what you want to achieve is to use the custom function to specify the analysis that you would like to perform, and use `lapply()` to iterate. For example:
+
+
+Compare this with the for-loop method used above. Some of the advantages are:
+
+* No need to initialise a list; `lapply()` always returns a list. 
+* It is easier to iterate through a character vector even if you want to return the outputs in a list.
+* It's faster - although you would not notice any difference in this particular example, the difference will be obvious if larger datasets are involved, or if the calculations are more complex.
+
+A more complex example where using loops or `lapply()` is unavoidable is shown below. Here, the objective is to create 10 columns, each of which sum up the number of times a particular brand (brand represented by the "_1", "_2", etc. in the variable) across the three snack occasion types. For instance, one column would represent the number of occasions in which a respondent has consumed a "posh chocolate", with possible values ranging from 0 to 3. 
+
+There is a need to iterate 10 times - once for each brand that is represented in the data. As you try to figure out what the code does, here's a guide on some features of the code:
+* `!!sym()` is a wrapper that allows character inputs into the function to be used as names within the function. When used in this functional programming context, `:=` is used instead of the normal `=`when specifying the name of the new column.
+* `apply()` does a similar thing to `lapply()`, but allows you to specify in the `MARGIN` argument whether you want to apply the function by row or by column. MARGIN = 1 will apply by row, whereas MARGIN = 2 will apply by column. This is used in the code below so that the column sums across.
+* `transmute()` is a variation of `mutate()` where only the new column is returned.
+* `bind_cols()` takes data frames in a list and then bind them together by columns. Its "row" counterpart is `bind_rows()`.
+
+
+
+```r
+create_sum_columns <- function(i){
+  it <- paste0("_",i)
+  col_name <- paste0("SUM",it)
+  
+  big_snack_data %>%
+  select(ends_with(it)) %>%
+  transmute(!!sym(col_name):=apply(.,MARGIN = 1,sum)) # transmute() is similar to mutate(), but only returns the new column
+}
+
+lapply(1:10, create_sum_columns) %>%
+  bind_cols() %>%
+  glimpse()
+```
+
+```
+## Observations: 5,000
+## Variables: 10
+## $ SUM_1  <dbl> 0, 2, 1, 2, 0, 1, 1, 3, 2, 0, 2, 1, 2, 2, 1, 1, 2, 3, 2...
+## $ SUM_2  <dbl> 2, 2, 3, 1, 3, 1, 1, 2, 3, 1, 0, 2, 0, 2, 1, 1, 2, 2, 2...
+## $ SUM_3  <dbl> 3, 2, 1, 1, 3, 2, 1, 3, 1, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2...
+## $ SUM_4  <dbl> 2, 1, 0, 2, 1, 2, 1, 1, 2, 3, 2, 0, 1, 0, 2, 1, 2, 1, 2...
+## $ SUM_5  <dbl> 1, 2, 1, 0, 2, 3, 2, 1, 1, 2, 0, 2, 1, 1, 1, 1, 2, 2, 3...
+## $ SUM_6  <dbl> 2, 2, 2, 1, 2, 1, 1, 2, 2, 2, 1, 1, 2, 0, 2, 1, 2, 2, 2...
+## $ SUM_7  <dbl> 1, 1, 1, 3, 2, 1, 3, 2, 1, 2, 2, 3, 3, 3, 2, 1, 1, 2, 1...
+## $ SUM_8  <dbl> 0, 1, 3, 0, 1, 1, 1, 3, 0, 1, 2, 3, 2, 2, 2, 3, 0, 1, 2...
+## $ SUM_9  <dbl> 0, 3, 2, 1, 2, 2, 3, 1, 2, 1, 0, 2, 3, 1, 1, 1, 3, 1, 2...
+## $ SUM_10 <dbl> 1, 3, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 3, 0, 2, 0, 1...
+```
+
+
+You should now be ready to write some of your own for-loops or functions! There are a few other things to bear in mind:
+
+1. In many cases where it may *seem* like a loop or `lapply()` is necessary, check first. For instance, if you are trying to profile some mutually-exclusive segments (stored in a single categorical variable), you should use `group_by()` rather than looping through `filter()`. When you want to perform the same `summarise()` action on a number of variables, it's useful to consider whether `summarise_at()` can solve your problem. For instance, one non-loop workaround for one of the earlier examples is as follows - which achieves the same effect without using a for-loop or `lapply()`, but is not scalable when there are 10 or even 20 types of snacking occasions.
+
+
+
 
 
 
